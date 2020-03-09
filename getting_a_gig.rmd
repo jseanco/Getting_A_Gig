@@ -1,0 +1,57 @@
+---
+title: "Getting a Gig"
+author: "Sean Corcoran, Sarah Dodamead, Christopher Matos, Ethan Tenison"
+date: "3/9/2020"
+output: html_document
+---
+
+```{r libraries, message=FALSE, warning=FALSE}
+
+list.of.packages <-
+        c(
+                "tidyverse",
+                "googledrive",
+                "janitor",
+                "dplyr"
+                
+           )
+
+new.packages <-list.of.packages[!(list.of.packages %in% installed.packages()[, "Package"])]
+
+
+library(googledrive)
+library(tidyverse)
+library(janitor)
+library(dplyr)
+
+
+```
+
+## Pulling in the data 
+
+```{r data, cache = TRUE}
+
+ drive_download(as_id("1S4B1Txs-ycsyO0X6DEA5C1STHt1fXeOK"), overwrite = TRUE)
+ df <- read.csv("EER396_Data_Set.csv")
+ df <- clean_names(df)
+
+```
+
+
+## Data Cleaning 
+
+```{r datacleaning}
+ 
+df <- df %>% mutate(converted = ifelse(!is.na(df$first_dash_date), 1, 0))
+
+```
+
+
+```{r logistic_regression}
+# da_mvr_bgc_start + da_mvr_bgc_pass +
+
+logit <- glm(converted ~ age + orientation_type + channel + da_profile_submit + da_orientation_select
+             + da_dropshipping_created + da_oriented + da_activated + holdout, data = df, family = "binomial")
+
+summary(logit)
+```
