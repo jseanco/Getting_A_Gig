@@ -12,7 +12,9 @@ list.of.packages <-
                 "tidyverse",
                 "googledrive",
                 "janitor",
-                "dplyr"
+                "dplyr",
+                "caret"
+                
                 
            )
 
@@ -23,7 +25,7 @@ library(googledrive)
 library(tidyverse)
 library(janitor)
 library(dplyr)
-
+library(caret)
 
 ```
 
@@ -46,6 +48,17 @@ df <- df %>% mutate(converted = ifelse(!is.na(df$first_dash_date), 1, 0))
 
 ```
 
+## Initial Plots
+
+notes: break down of age and where they get stuck in the sales. x axes and y axis place in the sales funnel where groups get stopped 
+
+```{r plots}
+
+
+```
+
+
+## Logistic Regression
 
 ```{r logistic_regression}
 # da_mvr_bgc_start + da_mvr_bgc_pass +
@@ -54,4 +67,6 @@ logit <- glm(converted ~ age + orientation_type + channel + da_profile_submit + 
              + da_dropshipping_created + da_oriented + da_activated + holdout, data = df, family = "binomial")
 
 summary(logit)
+
+
 ```
