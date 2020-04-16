@@ -65,6 +65,8 @@ library(caret)
 -planned_sp
 -planned_sm 
 -offer_end
+-is_waitlist, all the waitlisted leads were removed before removing the variable.
+-current_wl_status 
 -NA's were removed from submit_profile_time because we don't have enough data on individuals who haven't made it past that step. 
 
 #### Variables that have been created: 
@@ -78,9 +80,11 @@ library(caret)
 
 df <- data %>% mutate(converted = ifelse(!is.na(data$first_dash_date), 1, 0)) %>% 
         filter(!is.na(submit_profile_time)) %>% 
+        filter(is_waitlist != "waitlist") %>% 
         select(-c("da_activated", "background_submit_date", "submit_profile_time", "orientation_selection_time","orientation_start_time", "mvr_initiated","mvr_cleared",
                   "criminal_initiated","criminal_cleared", "orient_date", "start_date", "first_dash_date", "planned_time", "waitlist_end_date" ,"dropship_kit_ordered","apply_date",
-                  "applied_submarket","planned_sp", "planned_sm", "offer_end" )) 
+                  "applied_submarket","planned_sp", "planned_sm", "offer_end", "is_waitlist", "current_wl_status" ))
+        
         
         
 
