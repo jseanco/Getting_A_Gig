@@ -72,6 +72,10 @@ Everything before submitting profile has been removed. Even after profile submis
 -dash_day, was removed because we use first_dash_day
 -NA's were removed from submit_profile_time because we don't have enough data on individuals who haven't made it past that step.
 -da_bgc_info_sub, removed because everything NA
+-x, just an indentifier that I think believe has any meaning
+-dash_applicant_id, just an indentifier that I think believe has any meaning
+-dasher_id, just an indentifier that I think believe has any meaning
+-zipcode, it has non US zip codes, so I just took it out. 
 
 #### Variables that have been created: 
 -converted, binary variable describing if a lead has converted or not
@@ -96,7 +100,7 @@ df <- data %>% mutate(converted = ifelse(!is.na(data$first_dash_date), 1, 0)) %>
         filter(!is.na(submit_profile_time)) %>% 
         filter(is_waitlist != "waitlist") %>% 
         filter(!is.na(age)) %>% 
-        select(-c("da_activated", "background_submit_date", "submit_profile_time", "orientation_selection_time","orientation_start_time", "mvr_initiated","mvr_cleared","criminal_initiated","criminal_cleared", "orient_date", "start_date", "first_dash_date", "planned_time", "waitlist_end_date" ,"dropship_kit_ordered","apply_date","applied_submarket","planned_sp", "planned_sm", "offer_end", "is_waitlist", "current_wl_status","dash_day","da_bgc_info_sub" ))
+        select(-c("da_activated", "background_submit_date", "submit_profile_time", "orientation_selection_time","orientation_start_time", "mvr_initiated","mvr_cleared","criminal_initiated","criminal_cleared", "orient_date", "start_date", "first_dash_date", "planned_time", "waitlist_end_date" ,"dropship_kit_ordered","apply_date","applied_submarket","planned_sp", "planned_sm", "offer_end", "is_waitlist", "current_wl_status","dash_day","da_bgc_info_sub", "x", "dasher_applicant_id", "dasher_id", "zip_code" ))
 
 # Filling in blank data 
 
