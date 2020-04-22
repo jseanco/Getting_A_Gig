@@ -1,0 +1,27 @@
+---
+title: "Hierchial Clustering"
+author: "Ethan Tenison"
+date: "4/21/2020"
+output: html_document
+---
+
+```{r setup, message = TRUE, warning=FALSE}
+
+library(tidyverse)  # data manipulation
+library(cluster)    # clustering algorithms
+library(factoextra) # clustering visualization
+library(dendextend) # for comparing two dendrograms
+colnames(df)
+
+```
+
+
+## Hierchial Cluster on Data through first step 
+
+Here I'm looking at who did not make it to the background check step. The first thing I did was remove everyone who did pass and got rid of the remaining columns. 
+
+```{r small_clust}
+
+sm_clust <- df %>% filter(is.na(da_mvr_bgc_start)) %>% select(age:da_profile_submit)
+
+```
