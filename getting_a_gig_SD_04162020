@@ -1,0 +1,103 @@
+---
+title: "Getting a Gig"
+author: "Sean Corcoran, Sarah Dodamead, Christopher Matos, Ethan Tenison"
+date: "3/9/2020"
+output: html_document
+---
+
+```{r libraries, message=FALSE, warning=FALSE}
+list.of.packages <-
+        c(
+                "tidyverse",
+                "googledrive",
+                "janitor",
+                "dplyr",
+                "caret",
+                "leaps"
+                
+                
+           )
+#new.packages <-list.of.packages[!(list.of.packages %in% installed.packages()[, "Package"])]
+library(googledrive)
+library(tidyverse)
+library(janitor)
+library(dplyr)
+library(caret)
+library(leaps)
+```
+
+## Pulling in the data 
+
+```{r data, cache = TRUE}
+ drive_download(as_id("1S4B1Txs-ycsyO0X6DEA5C1STHt1fXeOK"), overwrite = TRUE)
+ data <- read.csv("EER396_Data_Set.csv")
+ data <- clean_names(data)
+ str(data)
+```
+
+
+## Data Cleaning 
+
+#### Variables that have been removed: 
+-da_activated
+-background_submit_Date
+-submit_profile_time
+-orientation_selection_time
+-orientation_start_time (we need to check to see if this is valueable)
+-waitlist_end_date  (this would be more helpful if we knew what date they were put on a waitlist)
+-mvr_initiated  
+-mvr_cleared 
+-criminal_initiated
+-criminal_cleared
+-dropship_kit_ordered
+-orient_date
+-start_date  this is connected to activation which we also deleted 
+-first_dash_date, this is removed after the converted variable is created 
+-planned_time 
+-apply_date (this value is important if we need to calculate new day variables)
+-applied_submarket
+-planned_sp
+-planned_sm 
+-offer_end
+-is_waitlist, all the waitlisted leads were removed before removing the variable.
+-current_wl_status 
+-NA's were removed from submit_profile_time because we don't have enough data on individuals who haven't made it past that step. 
+
+#### Variables that have been created: 
+-converted, binary variable describing if a lead has converted or not
+
+
+
+
+```{r datacleaning}
+df <- data %>% mutate(converted = ifelse(!is.na(data$first_dash_date), 1, 0)) %>% 
+        filter(!is.na(submit_profile_time)) %>% 
+        filter(is_waitlist != "waitlist") %>% 
+        select(-c("da_activated", "background_submit_date", "submit_profile_time", "orientation_selection_time","orientation_start_time", "mvr_initiated","mvr_cleared",
+                  "criminal_initiated","criminal_cleared", "orient_date", "start_date", "first_dash_date", "planned_time", "waitlist_end_date" ,"dropship_kit_ordered","apply_date",
+                  "applied_submarket","planned_sp", "planned_sm", "offer_end", "is_waitlist", "current_wl_status" ))
+        
+        
+        
+```
+
+
+## Logistic Regression
+
+```{r logistic_regression}
+# da_mvr_bgc_start + da_mvr_bgc_pass +
+logit <- glm(converted ~ age + orientation_type + channel + da_profile_submit + da_orientation_select
+             + da_dropshipping_created + da_oriented + holdout, data = df, family = "binomial")
+summary(logit)
+```
+
+
+```{r backward stepwise selection}
+mod.bck <- regsubsets(converted ~ ., data = df, nvmax = 5, method = "backward")#Models with upto 8 predictors
+mod.bck.sum <- summary(mod.bck) 
+mod.bck.sum
+cofb <- coef(mod.bck)
+cofb
+
+
+```
