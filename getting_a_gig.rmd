@@ -35,8 +35,18 @@ library(caret)
 
  drive_download(as_id("1S4B1Txs-ycsyO0X6DEA5C1STHt1fXeOK"), overwrite = TRUE)
  data <- read.csv("EER396_Data_Set.csv", stringsAsFactors = FALSE)
+ Submarkets <- read.csv("Submarkets.csv", stringsAsFactors = FALSE)
  data <- clean_names(data)
+ data <- cbind(data,Submarkets)
+ data$DA_FirstDash <- NULL
  str(data)
+
+ 
+ data$DENSITY <- as.numeric(as.character(data$DENSITY))
+ data$LOCALECODE <- as.numeric(as.character(data$LOCALECODE))
+ data$x2020POP <- as.numeric(as.character(data$x2020POP))
+ data$AREA <- as.numeric(as.character(data$AREA))
+ data <- data[!is.na(data$DENSITY), ]
 
 
 ```
@@ -96,11 +106,12 @@ Everything before submitting profile has been removed. Even after profile submis
 ```{r datacleaning}
 
 #Leads that converted are given a 1 in the converted column 
+df2 <- data %>% mutate(converted = ifelse(!is.na(data$first_dash_date), 1, 0))
 df <- data %>% mutate(converted = ifelse(!is.na(data$first_dash_date), 1, 0)) %>% 
         filter(!is.na(submit_profile_time)) %>% 
         filter(is_waitlist != "waitlist") %>% 
         filter(!is.na(age)) %>% 
-        select(-c("da_activated", "background_submit_date", "submit_profile_time", "orientation_selection_time","orientation_start_time", "mvr_initiated","mvr_cleared","criminal_initiated","criminal_cleared", "orient_date", "start_date", "first_dash_date", "planned_time", "waitlist_end_date" ,"dropship_kit_ordered","apply_date","applied_submarket","planned_sp", "planned_sm", "offer_end", "is_waitlist", "current_wl_status","dash_day","da_bgc_info_sub", "x", "dasher_applicant_id", "dasher_id", "zip_code" ))
+        select(-c("da_activated", "background_submit_date", "submit_profile_time", "orientation_selection_time","orientation_start_time", "mvr_initiated","mvr_cleared","criminal_initiated","criminal_cleared", "orient_date", "start_date", "first_dash_date", "planned_time", "waitlist_end_date" ,"dropship_kit_ordered","apply_date","planned_sp", "planned_sm", "offer_end", "is_waitlist", "current_wl_status","dash_day","da_bgc_info_sub", "x", "dasher_applicant_id", "dasher_id", "zip_code" ))
 
 # Filling in blank data 
 
@@ -128,7 +139,9 @@ df$delivs[is.na(df$delivs)] <- 0
 # da_mvr_bgc_start + da_mvr_bgc_pass +
 
 logit <- glm(converted ~ age + orientation_type + channel + da_profile_submit + da_orientation_select
-             + da_dropshipping_created + da_oriented + holdout, data = df, family = "binomial")
+             + da_dropshipping_created + da_oriented + holdout + LOCALECODE + DENSITY +x2020POP, data = df, family = "binomial")
+
+logit
 
 summary(logit)
 
